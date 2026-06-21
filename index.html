@@ -25,10 +25,12 @@
         .container { 
             background-color: #ffffff; 
             padding: 30px; 
+            padding-top: 50px; /* เพิ่มพื้นที่ด้านบนสำหรับรองรับ Widget ข้อมูลผู้ใช้งาน */
             border-radius: 12px; 
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); 
             width: 100%; 
             max-width: 600px; 
+            position: relative; /* เพื่อรองรับการระบุพิกัดแบบ Absolute ของข้อมูลผู้ใช้งาน */
         }
         h1 { 
             text-align: center; 
@@ -39,7 +41,7 @@
         .login-box { 
             text-align: center; 
             margin-bottom: 20px; 
-            padding: 15px; 
+            padding: 25px 15px; 
             background-color: #f1f8e9; 
             border-radius: 10px; 
             border: 1px solid #dcedc8;
@@ -56,16 +58,42 @@
             transition: background-color 0.2s;
         }
         .google-btn:hover { background-color: #357ae8; }
-        .logout-btn { 
-            background-color: #f44336; 
+        
+        .user-info-top { 
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8em;
+            color: #555;
+            background-color: #f1f8e9;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid #dcedc8;
+        }
+        .user-info-top span {
+            font-weight: bold;
+            color: #2e7d32;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .logout-small-btn { 
+            background-color: #ef5350; 
             color: white; 
             border: none; 
-            padding: 6px 12px; 
-            border-radius: 5px; 
+            padding: 2px 8px; 
+            border-radius: 12px; 
             cursor: pointer; 
-            font-size: 0.9em; 
-            margin-top: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: background-color 0.2s;
         }
+        .logout-small-btn:hover { background-color: #d32f2f; }
+
         .total-merit-bar { 
             background-color: #c8e6c9; 
             padding: 15px; 
@@ -83,11 +111,10 @@
             margin-bottom: 25px; 
         }
         
-        /* ปรับส่วนนี้ให้ขยับมากึ่งกลางบรรทัด */
         .input-row { 
             display: flex; 
             gap: 10px; 
-            justify-content: center; /* จัดกึ่งกลางบรรทัด */
+            justify-content: center; 
             align-items: center;
         }
         
@@ -101,7 +128,6 @@
         }
         select, input[type="text"] { flex-grow: 1; }
         
-        /* ปรับความกว้างของช่องจำนวนเงินไม่ให้ขยายเต็มบรรทัดเกินไปเมื่อจัดกึ่งกลาง */
         .input-row input[type="number"] {
             width: 140px;
             flex-grow: 0;
@@ -116,7 +142,7 @@
             cursor: pointer; 
             font-size: 1em; 
             font-weight: bold;
-            flex-grow: 0; /* ปรับขนาดให้พอดี ไม่ยืดเต็มพื้นที่ */
+            flex-grow: 0;
         }
         .add-btn:hover { background-color: #388e3c; }
         
@@ -214,24 +240,100 @@
         a:hover { 
             text-decoration: underline; 
         }
+
+        /* Custom Toast Notification */
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(33, 33, 33, 0.95);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            z-index: 1000;
+            font-size: 0.95em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        /* Custom Confirm Modal */
+        #confirmModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+        .confirm-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+        .confirm-box p {
+            margin: 0 0 20px 0;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+        .confirm-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .confirm-btn-yes {
+            background-color: #ef5350;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+        }
+        .confirm-btn-yes:hover { background-color: #d32f2f; }
+        .confirm-btn-no {
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+        }
+        .confirm-btn-no:hover { background-color: #bdbdbd; }
     </style>
 </head>
 <body>
 <div class="container">
-    <!-- ปรับหัวข้อตามคำขอ เหลือเพียง "บันทึกบุญ" -->
+    <!-- หัวข้อตามคำขอ เหลือเพียง "บันทึกบุญ" -->
     <h1>บันทึกบุญ</h1>
     
-    <!-- ส่วนล็อกอิน -->
-    <div class="login-box">
-        <button id="loginBtn" class="google-btn">🔐 ล็อกอินด้วย Google</button>
-        <div id="userInfo" style="display:none">
-            <p>👤 <span id="userName" style="font-weight: bold;"></span></p>
-            <button id="logoutBtn" class="logout-btn">ออกจากระบบ</button>
-        </div>
+    <!-- ข้อมูลผู้ใช้ล็อกอิน (แสดงอยู่ขวาบนสุด ขนาดเล็ก) -->
+    <div id="userInfo" class="user-info-top" style="display:none">
+        👤 <span id="userName"></span>
+        <button id="logoutBtn" class="logout-small-btn">ออก</button>
     </div>
 
-    <!-- แถบยอดรวมทั้งหมด -->
-    <div id="totalMeritBar" class="total-merit-bar">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
+    <!-- ส่วนล็อกอินก่อนเข้าสู่ระบบ -->
+    <div id="loginBox" class="login-box">
+        <button id="loginBtn" class="google-btn">🔐 ล็อกอินด้วย Google</button>
+    </div>
+
+    <!-- แถบยอดรวมทั้งหมด (ซ่อนไว้ก่อนจนกว่าจะล็อกอิน) -->
+    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
 
     <!-- ส่วนกรอกข้อมูลเพิ่มบุญใหม่ -->
     <div id="inputForm" class="input-section" style="display: none;">
@@ -274,6 +376,18 @@
     <div class="merit-list"><ul id="meritList"></ul></div>
 </div>
 
+<!-- โครงสร้าง Dialog และ Toast แบบ Custom แทน Window Alert / Confirm -->
+<div id="toast"></div>
+<div id="confirmModal">
+    <div class="confirm-box">
+        <p id="confirmMessage"></p>
+        <div class="confirm-btns">
+            <button id="confirmYes" class="confirm-btn-yes">ยืนยัน</button>
+            <button id="confirmNo" class="confirm-btn-no">ยกเลิก</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // การกำหนดค่า Firebase
     const firebaseConfig = {
@@ -293,6 +407,36 @@
 
     let merits = [];
     let uid = null;
+
+    // ระบบ Custom Toast ใช้งานแทน alert() เพื่อให้ดูเป็นมืออาชีพยิ่งขึ้น
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    // ระบบ Custom Confirm Modal ใช้งานแทน confirm() ดั้งเดิม ปลอดภัยสำหรับการรันใน IFrame
+    function showConfirm(message, callback) {
+        const modal = document.getElementById('confirmModal');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+
+        confirmMessage.innerText = message;
+        modal.style.display = 'flex';
+
+        confirmYes.onclick = () => {
+            modal.style.display = 'none';
+            callback();
+        };
+
+        confirmNo.onclick = () => {
+            modal.style.display = 'none';
+        };
+    }
 
     // ดึงวันและเวลาปัจจุบันในรูปแบบไทย วัน/เดือน/ปี ชั่วโมง:นาที
     function getCurrentDateTime() {
@@ -393,7 +537,7 @@
         const amt = parseFloat(document.getElementById('meritAmountInput').value) || 0;
 
         if (!desc) {
-            alert('กรุณาเลือกหรือพิมพ์ชื่อรายการบุญครับ');
+            showToast('กรุณาเลือกหรือพิมพ์ชื่อรายการบุญครับ');
             return;
         }
 
@@ -429,7 +573,7 @@
         const note = descInput.value.trim();
 
         if (isNaN(val) || val <= 0) {
-            alert('กรุณากรอกจำนวนเงินให้ถูกต้องและมากกว่า 0 บาทครับ');
+            showToast('กรุณากรอกจำนวนเงินให้ถูกต้องและมากกว่า 0 บาทครับ');
             return;
         }
 
@@ -456,11 +600,12 @@
     // ลบรายการบุญหลัก
     window.deleteMerit = function(index) {
         if (!uid) return;
-        if (confirm('คุณแน่ใจหรือไม่ที่จะลบบันทึกบุญนี้อย่างถาวร?')) {
+        showConfirm('คุณแน่ใจหรือไม่ที่จะลบบันทึกบุญนี้อย่างถาวร?', () => {
             merits.splice(index, 1);
             saveMerits();
             renderMerits();
-        }
+            showToast('ลบบันทึกบุญเรียบร้อยแล้ว');
+        });
     };
 
     // การตรวจสอบสถานะล็อกอิน
@@ -468,16 +613,18 @@
         if (user) {
             uid = user.uid;
             document.getElementById('userName').innerText = user.displayName;
-            document.getElementById('loginBtn').style.display = 'none';
-            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('totalMeritBar').style.display = 'block'; // ปรากฏเมื่อล๊อกอินแล้วเท่านั้น
             document.getElementById('inputForm').style.display = 'flex';
             loadMerits();
         } else {
             uid = null;
             merits = [];
             renderMerits();
-            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('loginBox').style.display = 'block';
             document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('totalMeritBar').style.display = 'none'; // ซ่อนเมื่อยังไม่ล็อกอิน
             document.getElementById('inputForm').style.display = 'none';
         }
     });
