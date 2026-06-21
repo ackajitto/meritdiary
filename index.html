@@ -450,7 +450,7 @@
     </div>
 
     <!-- แถบยอดรวมทั้งหมด (จะซ่อนไว้จนกว่าจะล็อกอินเรียบร้อย) -->
-    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
+    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวม: 0 บาท</div>
 
     <!-- ส่วนกรอกข้อมูลเพิ่มบุญใหม่ -->
     <div id="inputForm" class="input-section" style="display: none;">
@@ -604,7 +604,7 @@
 
     function updateTotal() {
         const total = merits.reduce((sum, m) => sum + (parseFloat(m.totalAmount) || 0), 0);
-        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวมทั้งหมด: ${formatCurrency(total)}`;
+        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวม: ${formatCurrency(total)}`;
     }
 
     // เรนเดอร์สร้างรายการบุญบน HTML DOM
