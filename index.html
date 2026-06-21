@@ -596,9 +596,10 @@
         return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
     }
 
-    // ฟังก์ชันในการแสดงผลสกุลเงินเป็นรูปแบบสกุลบาท
+    // ฟังก์ชันในการแสดงผลสกุลเงินเป็นรูปแบบสกุลบาท (ปรับแต่งแก้ไขเว้นวรรค 1 เคาะหลังสัญลักษณ์ ฿)
     function formatCurrency(amount) {
-        return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(amount);
+        const formatted = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(amount);
+        return formatted.replace('฿', '฿ ');
     }
 
     function updateTotal() {
