@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกบุญ - ปุญญสัมภาร</title>
+    <title>บันทึกบุญ</title>
     
     <!-- นำเข้า Firebase SDK ในรูปแบบ Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -82,10 +82,15 @@
             gap: 10px; 
             margin-bottom: 25px; 
         }
+        
+        /* ปรับส่วนนี้ให้ขยับมากึ่งกลางบรรทัด */
         .input-row { 
             display: flex; 
             gap: 10px; 
+            justify-content: center; /* จัดกึ่งกลางบรรทัด */
+            align-items: center;
         }
+        
         select, input[type="text"], input[type="number"] { 
             padding: 12px 15px; 
             border: 1px solid #c8e6c9; 
@@ -95,6 +100,13 @@
             background-color: #fafafa;
         }
         select, input[type="text"] { flex-grow: 1; }
+        
+        /* ปรับความกว้างของช่องจำนวนเงินไม่ให้ขยายเต็มบรรทัดเกินไปเมื่อจัดกึ่งกลาง */
+        .input-row input[type="number"] {
+            width: 140px;
+            flex-grow: 0;
+        }
+        
         .add-btn { 
             padding: 12px 20px; 
             background-color: #4caf50; 
@@ -104,6 +116,7 @@
             cursor: pointer; 
             font-size: 1em; 
             font-weight: bold;
+            flex-grow: 0; /* ปรับขนาดให้พอดี ไม่ยืดเต็มพื้นที่ */
         }
         .add-btn:hover { background-color: #388e3c; }
         
@@ -205,6 +218,7 @@
 </head>
 <body>
 <div class="container">
+    <!-- ปรับหัวข้อตามคำขอ เหลือเพียง "บันทึกบุญ" -->
     <h1>บันทึกบุญ</h1>
     
     <!-- ส่วนล็อกอิน -->
