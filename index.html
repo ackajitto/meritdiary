@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Merit Tracker Pro</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#eef7ee;color:#222}
+.dark{background:#121212;color:#eee}
+.wrap{max-width:1000px;margin:auto;padding:20px}
+.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.dark .card{background:#1e1e1e}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+input,select,button{padding:10px;border-radius:8px;border:1px solid #ccc}
+button{cursor:pointer}
+.progress{height:10px;background:#ddd;border-radius:10px;overflow:hidden}
+.bar{height:100%;background:#4caf50}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.small{font-size:.9em;color:#666}
+.dark .small{color:#bbb}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🙏 บันทึกบุญ Pro</h1>
+
+<div class="card">
+<button onclick="toggleDark()">🌙 Dark Mode</button>
+<button onclick="exportData()">📥 Export</button>
+<input type="file" onchange="importData(event)">
+</div>
+
+<div class="grid">
+<div class="card"><h3>💰 ยอดรวม</h3><div id="total">0</div></div>
+<div class="card"><h3>📋 รายการ</h3><div id="count">0</div></div>
+<div class="card"><h3>📅 เดือนนี้</h3><div id="month">0</div></div>
+</div>
+
+<div class="card">
+<div class="row">
+<input id="name" placeholder="ชื่อรายการบุญ">
+<input id="amount" type="number" placeholder="ยอดเงิน">
+<input id="target" type="number" placeholder="เป้าหมาย">
+<button onclick="addItem()">➕ เพิ่ม</button>
+</div>
+<br>
+<input id="search" placeholder="🔍 ค้นหา" oninput="render()">
+</div>
+
+<div id="list"></div>
+</div>
+
+<script>
+let data=JSON.parse(localStorage.getItem('meritpro')||'[]');
+
+function save(){
+ localStorage.setItem('meritpro',JSON.stringify(data));
+ render();
+}
+
+function money(v){
+ return new Intl.NumberFormat('th-TH').format(v||0)+' บาท';
+}
+
+function addItem(){
+ const n=name.value.trim();
+ if(!n)return;
+ data.push({
+  name:n,
+  total:+amount.value||0,
+  target:+target.value||0,
+  history:[{amt:+amount.value||0,date:new Date().toLocaleString('th-TH')}]
+ });
+ name.value='';amount.value='';target.value='';
+ save();
+}
+
+function addAmount(i){
+ let a=+document.getElementById('a'+i).value||0;
+ if(!a)return;
+ data[i].total+=a;
+ data[i].history.push({amt:a,date:new Date().toLocaleString('th-TH')});
+ save();
+}
+
+function editName(i){
+ let n=prompt('แก้ไขชื่อ',data[i].name);
+ if(n){data[i].name=n;save();}
+}
+
+function del(i){
+ if(confirm('ลบรายการ?')){
+  data.splice(i,1);save();
+ }
+}
+
+function render(){
+ let q=(search.value||'').toLowerCase();
+ let html='';
+ let total=0;
+ let monthTotal=0;
+ let m=(new Date()).getMonth()+1;
+
+ data.forEach((x,i)=>{
+   total+=x.total;
+   x.history.forEach(h=>{
+      if(h.date.includes('/'+String(m)+'/')) monthTotal+=h.amt;
+   });
+   if(!x.name.toLowerCase().includes(q)) return;
+
+   let p=x.target?Math.min(100,(x.total/x.target)*100):0;
+
+   html+=`
+   <div class="card">
+   <h3>${x.name}</h3>
+   <b>${money(x.total)}</b>
+   <div class="small">เป้าหมาย: ${money(x.target)}</div>
+   <div class="progress"><div class="bar" style="width:${p}%"></div></div>
+   <div>${p.toFixed(0)}%</div><br>
+   <div class="row">
+   <input id="a${i}" type="number" placeholder="เพิ่มยอด">
+   <button onclick="addAmount(${i})">บันทึก</button>
+   <button onclick="editName(${i})">✏️</button>
+   <button onclick="del(${i})">🗑️</button>
+   </div>
+   <details>
+   <summary>📜 ประวัติ</summary>
+   ${x.history.map(h=>`<div>${h.date} +${money(h.amt)}</div>`).join('')}
+   </details>
+   </div>`;
+ });
+
+ list.innerHTML=html;
+ totalEl=document.getElementById('total');
+ countEl=document.getElementById('count');
+ monthEl=document.getElementById('month');
+ totalEl.textContent=money(total);
+ countEl.textContent=data.length+' รายการ';
+ monthEl.textContent=money(monthTotal);
+}
+
+function exportData(){
+ let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ let a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='merit-backup.json';
+ a.click();
+}
+
+function importData(e){
+ let f=e.target.files[0];
+ if(!f)return;
+ let r=new FileReader();
+ r.onload=()=>{
+   data=JSON.parse(r.result);
+   save();
+ };
+ r.readAsText(f);
+}
+
+function toggleDark(){
+ document.body.classList.toggle('dark');
+}
+
+render();
+</script>
+</body>
+</html>
