@@ -1,163 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>บันทึกบุญ</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #e8f5e9; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .container { background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); width: 100%; max-width: 600px; }
-        h1 { text-align: center; color: #2e7d32; margin-bottom: 10px; font-size: 2.2em; }
-        .total-merit-bar { background-color: #c8e6c9; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.2em; font-weight: bold; color: #1b5e20; margin-bottom: 25px; }
-        .input-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
-        .input-row { display: flex; gap: 10px; }
-        select, input[type="text"], input[type="number"] { padding: 12px 15px; border: 1px solid #c8e6c9; border-radius: 5px; outline: none; flex-grow: 1; }
-        .input-section button { padding: 12px 20px; background-color: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .merit-list ul { list-style: none; padding: 0; }
-        .merit-list li { background-color: #f1f8e9; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #dcedc8; cursor: pointer; }
-        
-        .merit-header { display: flex; justify-content: space-between; align-items: center; }
-        .merit-title { font-weight: bold; }
-        .merit-amount { font-weight: bold; color: #4caf50; }
-        
-        .merit-details { margin-top: 15px; border-top: 2px solid #dcedc8; padding-top: 15px; cursor: default; }
-        .merit-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .merit-actions input { padding: 8px; border: 1px solid #dcedc8; border-radius: 5px; flex-grow: 1; }
-        
-        .merit-transactions-list { list-style: none; padding: 0; margin: 0; font-size: 0.9em; }
-        .merit-transactions-list li { display: flex; justify-content: space-between; background: #fff; padding: 8px; border-bottom: 1px solid #eee; margin-bottom: 2px; }
-        
-        .delete-btn { background-color: #f44336; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; margin-top: 10px; width: 100%; }
-        a { color: #2196f3; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกบุญ Firebase</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<style>
+body{font-family:Arial,sans-serif;background:#e8f5e9;margin:0;padding:20px}
+.container{max-width:700px;margin:auto;background:#fff;padding:25px;border-radius:12px}
+.login-box{text-align:center;margin-bottom:15px}
+button{cursor:pointer}
+.google-btn{background:#4285F4;color:#fff;border:none;padding:12px 20px;border-radius:8px}
+.logout-btn{background:#f44336;color:#fff;border:none;padding:8px 12px;border-radius:6px}
+.total-merit-bar{background:#c8e6c9;padding:12px;border-radius:8px;margin:15px 0;font-weight:bold}
+.input-section{display:flex;flex-direction:column;gap:10px}
+.input-row{display:flex;gap:10px}
+input,select{padding:10px}
+.add-btn{background:#4caf50;color:white;border:none}
+li{list-style:none;background:#f1f8e9;margin:8px 0;padding:10px;border-radius:8px}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>บันทึกบุญ</h1>
-        <div id="totalMeritBar" class="total-merit-bar">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
-        <div class="input-section">
-            <input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญเอง">
-            <select id="meritSelect">
-                <option value="">-- หรือเลือกจากรายการด้านล่าง --</option>
-                <option value="บูชาธรรมหลวงพ่อ">บูชาธรรมหลวงพ่อ</option>
-                <option value="บูชาข้าวพระ">บูชาข้าวพระ</option>
-                <option value="บวชพระ">บวชพระ</option>
-                <option value="ทอดกฐินปี 2569">ทอดกฐินปี 2569</option>
-                <option value="พระไตรปิฎกฉบับธรรมชัย">พระไตรปิฎกฉบับธรรมชัย</option>
-                <option value="การศึกษาพระภิกษุ-สามเณร,บัณฑิตถาวร">การศึกษาพระภิกษุ-สามเณร,บัณฑิตถาวร</option>
-                <option value="ยา,อุปกรณ์การแพทย์เพื่อพระภิกษุอาพาธ">ยา,อุปกรณ์การแพทย์เพื่อพระภิกษุอาพาธ</option>
-                <option value="แสงสว่าง บูชามหาธรรมกายเจดีย์">แสงสว่าง บูชามหาธรรมกายเจดีย์</option>
-                <option value="ภัตตาหาร">ภัตตาหาร</option>
-                <option value="ข้าวสาร">ข้าวสาร</option>
-                <option value="ปานะ">ปานะ</option>
-                <option value="ปล่อยสัตว์ปล่อยปลา">ปล่อยสัตว์ปล่อยปลา</option>
-                <option value="รัตนบุปผาบูชาพระมหาธรรมกายเจดีย์">รัตนบุปผาบูชาพระมหาธรรมกายเจดีย์</option>
-                <option value="วัดภาคใต้ 323 วัด">วัดภาคใต้ 323 วัด</option>
-                <option value="เผยแผ่ธรรมะออนไลน์และบำรุงวัด">เผยแผ่ธรรมะออนไลน์และบำรุงวัด</option>
-                <option value="บุปผามาลาบูชาพระรัตนตรัย,มหาปูชนียาจารย์">บุปผามาลาบูชาพระรัตนตรัย,มหาปูชนียาจารย์</option>
-                <option value="ดอกกุหลาบบูชาพระมหาธรรมกายเจดีย์">ดอกกุหลาบบูชาพระมหาธรรมกายเจดีย์</option>
-                <option value="ธรรมะเพื่อประชาชน">ธรรมะเพื่อประชาชน</option>
-                <option value="บุพเปตพลี,พิธีอุทิศส่วนกุศลวันพระใหญ่">บุพเปตพลี,พิธีอุทิศส่วนกุศลวันพระใหญ่</option>
-                <option value="บำรุงวัด ค่าน้ำ ค่าไฟ">บำรุงวัด ค่าน้ำ ค่าไฟ</option>
-                <option value="เศรษฐีถาวร">เศรษฐีถาวร</option>
-                <option value="ผ้าไตรจีวร,อัฏฐบริขาร">ผ้าไตรจีวร,อัฏฐบริขาร</option>
-                <option value="ดอกบัวบูชาเจดีย์">ดอกบัวบูชาเจดีย์</option>
-                <option value="ยานพาหนะ">ยานพาหนะ</option>
-                <option value="สื่อธรรมะ">สื่อธรรมะ</option>
-            </select>
-            <div class="input-row">
-                <input type="number" id="meritAmountInput" placeholder="จำนวนเงิน">
-                <button id="addMeritBtn">+ เพิ่มบุญใหม่</button>
-            </div>
-        </div>
-        <div class="merit-list"><ul id="meritList"></ul></div>
-    </div>
+<div class="container">
+<h1>บันทึกบุญ</h1>
 
-    <script>
-        const manualMeritInput = document.getElementById('manualMeritInput');
-        const meritSelect = document.getElementById('meritSelect');
-        const meritAmountInput = document.getElementById('meritAmountInput');
-        const addMeritBtn = document.getElementById('addMeritBtn');
-        const meritList = document.getElementById('meritList');
-        const totalMeritBar = document.getElementById('totalMeritBar');
+<div class="login-box">
+<button id="loginBtn" class="google-btn">🔐 Login with Google</button>
+<div id="userInfo" style="display:none">
+<p>👤 <span id="userName"></span></p>
+<button id="logoutBtn" class="logout-btn">Logout</button>
+</div>
+</div>
 
-        let merits = JSON.parse(localStorage.getItem('merits')) || [];
+<div id="totalMeritBar" class="total-merit-bar">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
 
-        function getCurrentDateTime() {
-            const now = new Date();
-            return `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.toTimeString().substring(0, 5)}`;
-        }
+<div class="input-section">
+<input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญเอง">
+<input type="number" id="meritAmountInput" placeholder="จำนวนเงิน">
+<button id="addMeritBtn" class="add-btn">+ เพิ่มบุญใหม่</button>
+</div>
 
-        function linkify(text) {
-            return text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
-        }
+<ul id="meritList"></ul>
+</div>
 
-        function saveMerits() { 
-            localStorage.setItem('merits', JSON.stringify(merits)); 
-            updateTotal();
-        }
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBW_KT7TJAThSg29gedQurkXhcTv5ACOmg",
+  authDomain: "dharma-prayer.firebaseapp.com",
+  databaseURL: "https://dharma-prayer-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dharma-prayer",
+  storageBucket: "dharma-prayer.firebasestorage.app",
+  messagingSenderId: "4576358277",
+  appId: "1:4576358277:web:17240edf90e461cb489eec"
+};
 
-        function formatCurrency(amount) { return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(amount); }
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
 
-        function updateTotal() {
-            const total = merits.reduce((sum, m) => sum + m.totalAmount, 0);
-            totalMeritBar.innerText = `💰 ยอดบุญรวมทั้งหมด: ${formatCurrency(total)}`;
-        }
+let merits = [];
+let uid = null;
 
-        function renderMerits() {
-            meritList.innerHTML = '';
-            merits.forEach((merit, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="merit-header" onclick="toggleExpand(${index})">
-                        <span class="merit-title">${index + 1}. ${merit.description}</span>
-                        <span class="merit-amount">${formatCurrency(merit.totalAmount)}</span>
-                    </div>
-                    ${merit.expanded ? `
-                    <div class="merit-details">
-                        <div class="merit-actions">
-                            <input type="number" id="addAmt${index}" placeholder="จำนวน">
-                            <input type="text" id="addDesc${index}" placeholder="รายละเอียด/ลิงก์">
-                            <button onclick="updateMeritAmount(${index})">เพิ่ม</button>
-                        </div>
-                        <ul class="merit-transactions-list">${merit.transactions.map(t => `<li><span>${t.date} ${linkify(t.note)}</span> <span>${formatCurrency(t.amount)}</span></li>`).join('')}</ul>
-                        <button class="delete-btn" onclick="deleteMerit(${index})">ลบบันทึกบุญนี้</button>
-                    </div>` : ''}
-                `;
-                meritList.appendChild(li);
-            });
-            updateTotal();
-        }
+function formatCurrency(a){
+ return new Intl.NumberFormat('th-TH',{style:'currency',currency:'THB',minimumFractionDigits:0}).format(a);
+}
 
-        function toggleExpand(index) {
-            merits[index].expanded = !merits[index].expanded;
-            renderMerits();
-        }
+function updateTotal(){
+ const total = merits.reduce((s,m)=>s+m.totalAmount,0);
+ document.getElementById('totalMeritBar').innerText =
+ '💰 ยอดบุญรวมทั้งหมด: '+formatCurrency(total);
+}
 
-        function addMerit() {
-            const desc = manualMeritInput.value.trim() || meritSelect.value;
-            const amt = parseFloat(meritAmountInput.value) || 0;
-            if (desc) {
-                merits.push({ description: desc, totalAmount: amt, transactions: amt > 0 ? [{ amount: amt, date: getCurrentDateTime(), note: '' }] : [], expanded: false });
-                manualMeritInput.value = ''; meritSelect.value = ''; meritAmountInput.value = '';
-                saveMerits(); renderMerits();
-            }
-        }
+function renderMerits(){
+ const list=document.getElementById('meritList');
+ list.innerHTML='';
+ merits.forEach((m,i)=>{
+   const li=document.createElement('li');
+   li.innerHTML=`<b>${i+1}. ${m.description}</b> - ${formatCurrency(m.totalAmount)}
+   <button onclick="removeMerit(${i})">ลบ</button>`;
+   list.appendChild(li);
+ });
+ updateTotal();
+}
 
-        function updateMeritAmount(index) {
-            const val = parseFloat(document.getElementById(`addAmt${index}`).value);
-            const note = document.getElementById(`addDesc${index}`).value;
-            if (val > 0) {
-                merits[index].totalAmount += val;
-                merits[index].transactions.push({ amount: val, date: getCurrentDateTime(), note: note });
-                saveMerits(); renderMerits();
-            }
-        }
+function saveMerits(){
+ if(!uid) return;
+ db.ref('merit_users/'+uid+'/merits').set(merits);
+}
 
-        function deleteMerit(index) { if (confirm('ยืนยันการลบ?')) { merits.splice(index, 1); saveMerits(); renderMerits(); } }
-        addMeritBtn.addEventListener('click', addMerit);
-        renderMerits();
-    </script>
+function loadMerits(){
+ if(!uid) return;
+ db.ref('merit_users/'+uid+'/merits').on('value',snap=>{
+   merits=snap.val()||[];
+   renderMerits();
+ });
+}
+
+function removeMerit(i){
+ merits.splice(i,1);
+ saveMerits();
+}
+
+document.getElementById('addMeritBtn').onclick=()=>{
+ if(!uid){ alert('กรุณา Login ก่อน'); return; }
+ const desc=document.getElementById('manualMeritInput').value.trim();
+ const amt=parseFloat(document.getElementById('meritAmountInput').value)||0;
+ if(!desc) return;
+ merits.push({description:desc,totalAmount:amt});
+ saveMerits();
+ document.getElementById('manualMeritInput').value='';
+ document.getElementById('meritAmountInput').value='';
+};
+
+document.getElementById('loginBtn').onclick=async()=>{
+ const provider=new firebase.auth.GoogleAuthProvider();
+ await auth.signInWithPopup(provider);
+};
+
+document.getElementById('logoutBtn').onclick=()=>auth.signOut();
+
+auth.onAuthStateChanged(user=>{
+ if(user){
+   uid=user.uid;
+   document.getElementById('userName').innerText=user.displayName;
+   document.getElementById('loginBtn').style.display='none';
+   document.getElementById('userInfo').style.display='block';
+   loadMerits();
+ }else{
+   uid=null;
+   merits=[];
+   renderMerits();
+   document.getElementById('loginBtn').style.display='inline-block';
+   document.getElementById('userInfo').style.display='none';
+ }
+});
+</script>
 </body>
 </html>
