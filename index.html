@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>บันทึกบุญ</title>
     
-    <!-- นำเข้า Firebase SDK ในรูปแบบ Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -60,17 +59,17 @@
             min-height: 100vh; 
             margin: 0; 
             padding: 16px; 
-            font-size: 18px; /* เพิ่มขนาดอักษรเริ่มต้นสำหรับมือถือและไอแพด */
+            font-size: 18px; 
         }
 
         .container { 
             background-color: var(--bg-container); 
             padding: 24px; 
-            padding-top: 60px; /* เว้นระยะด้านบนเพื่อป้องกัน Username ทับกับหัวข้อ */
+            padding-top: 60px; 
             border-radius: 16px; 
             box-shadow: 0 10px 30px var(--shadow); 
             width: 100%; 
-            max-width: 680px; /* ขยายขนาดสูงสุดของคอนเทนเนอร์ให้รับกับหน้าจอไอแพดพอดี */
+            max-width: 680px; 
             position: relative;
         }
 
@@ -83,7 +82,6 @@
             font-weight: bold;
         }
 
-        /* ปุ่มสลับโหมดมืด (Dark Mode Button) */
         .theme-toggle-btn {
             position: absolute;
             top: 15px;
@@ -102,7 +100,6 @@
             box-shadow: 0 2px 8px var(--shadow);
         }
 
-        /* ส่วนล็อกอิน */
         .login-box { 
             text-align: center; 
             margin-bottom: 25px; 
@@ -128,7 +125,6 @@
         }
         .google-btn:hover { background-color: #357ae8; }
 
-        /* ข้อมูลผู้ใช้งานขนาดกะทัดรัดที่ขวาบนสุด */
         .user-info-top { 
             position: absolute;
             top: 15px;
@@ -178,7 +174,6 @@
             box-shadow: 0 4px 10px var(--shadow);
         }
 
-        /* ส่วนฟอร์มรับข้อมูล */
         .input-section { 
             display: flex; 
             flex-direction: column; 
@@ -208,7 +203,6 @@
             border-color: var(--text-primary);
         }
         
-        /* ปรับสัดส่วนให้ช่องจำนวนเงินมีระยะเหมาะสมบนมือถือ/แท็บเล็ต */
         .input-row input[type="number"] {
             width: 160px;
             flex-grow: 0;
@@ -314,21 +308,20 @@
             margin-bottom: 6px; 
             border-radius: 8px;
             font-size: 0.95em;
-            gap: 15px; /* เว้นวรรคขั้นกลางระหว่างข้อความและจำนวนเงิน */
+            gap: 15px;
         }
 
-        /* ปรับสไตล์ให้ข้อความ/ลิงก์รายละเอียดสามารถตัดคำขึ้นบรรทัดใหม่ได้เอง ไม่ทะลุออกนอกกรอบ */
         .merit-transactions-list li span:first-child {
             color: var(--text-regular);
             line-height: 1.4;
-            flex: 1; /* ช่วยดันให้ขยายครอบคลุมพื้นที่ที่เหลือ */
-            min-width: 0; /* สำคัญ: บังคับให้สิทธิ์ CSS ในการตัดคำทำงานได้อย่างสมบูรณ์ใน Flexbox */
-            word-break: break-all; /* ป้องกันข้อความหรือ URL ยาวเหยียดทะลุออกนอกขอบ */
-            overflow-wrap: break-word; /* รองรับการตัดข้อความเบราว์เซอร์สมัยใหม่ */
+            flex: 1; 
+            min-width: 0; 
+            word-break: break-all; 
+            overflow-wrap: break-word; 
         }
 
         .merit-transactions-list li span:last-child {
-            white-space: nowrap; /* ตรึงจำนวนเงินด้านขวาให้อยู่บรรทัดเดียวกันเสมอ */
+            white-space: nowrap; 
             flex-shrink: 0;
         }
         
@@ -350,7 +343,7 @@
             color: #2196f3; 
             text-decoration: none; 
             font-weight: bold;
-            word-break: break-all; /* ช่วยสลายคำในแท็ก a หากลิงก์มีลักษณะยาวต่อเนื่องกัน */
+            word-break: break-all; 
         }
         a:hover { 
             text-decoration: underline; 
@@ -444,31 +437,25 @@
 </head>
 <body>
 <div class="container">
-    <!-- ปุ่มเลือกสลับโหมดมืด / โหมดสว่าง -->
     <button id="themeToggle" class="theme-toggle-btn" aria-label="สลับโหมดถนอมสายตา">🌙</button>
 
-    <!-- หัวข้อเดี่ยว "บันทึกบุญ" -->
     <h1>บันทึกบุญ</h1>
     
-    <!-- ข้อมูลผู้ใช้ล็อกอิน (แสดงขวาบนสุด ขนาดกะทัดรัด) -->
     <div id="userInfo" class="user-info-top" style="display:none">
         👤 <span id="userName"></span>
         <button id="logoutBtn" class="logout-small-btn">ออก</button>
     </div>
 
-    <!-- ส่วนล็อกอินก่อนเข้าใช้งาน -->
     <div id="loginBox" class="login-box">
         <button id="loginBtn" class="google-btn">🔐 ล็อกอินด้วย Google เพื่อเริ่มบันทึก</button>
     </div>
 
-    <!-- แถบยอดรวมทั้งหมด (จะซ่อนไว้จนกว่าจะล็อกอินเรียบร้อย) -->
-    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวม: 0 บาท</div>
+    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
 
-    <!-- ส่วนกรอกข้อมูลเพิ่มบุญใหม่ -->
     <div id="inputForm" class="input-section" style="display: none;">
         <input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญเอง (หากไม่มีในรายการด้านล่าง)">
         <select id="meritSelect">
-            <option value="">-- เลือกบุญแนะนำ --</option>
+            <option value="">-- หรือคลิกเลือกจากกลุ่มบุญแนะนำ --</option>
             <option value="บูชาธรรมหลวงพ่อ">บูชาธรรมหลวงพ่อ</option>
             <option value="บูชาข้าวพระ">บูชาข้าวพระ</option>
             <option value="บวชพระ">บวชพระ</option>
@@ -501,11 +488,9 @@
         </div>
     </div>
 
-    <!-- รายชื่อรายการบุญที่ถูกดึงมาจากระบบคลาวด์ -->
     <div class="merit-list"><ul id="meritList"></ul></div>
 </div>
 
-<!-- โครงสร้าง Dialog และ Toast แบบ Custom แทน Alert / Confirm ดั้งเดิม เพื่อความลื่นไหลใน Safari และ iOS -->
 <div id="toast"></div>
 <div id="confirmModal">
     <div class="confirm-box">
@@ -608,7 +593,7 @@
         return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
     }
 
-    // ฟังก์ชันในการแสดงผลสกุลเงินเป็นรูปแบบสกุลบาท (ปรับแต่งแก้ไขเว้นวรรค 1 เคาะหลังสัญลักษณ์ ฿)
+    // ฟังก์ชันในการแสดงผลสกุลเงินเป็นรูปแบบสกุลบาท
     function formatCurrency(amount) {
         const formatted = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(amount);
         return formatted.replace('฿', '฿ ');
@@ -616,7 +601,7 @@
 
     function updateTotal() {
         const total = merits.reduce((sum, m) => sum + (parseFloat(m.totalAmount) || 0), 0);
-        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวม: ${formatCurrency(total)}`;
+        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวมทั้งหมด: ${formatCurrency(total)}`;
     }
 
     // เรนเดอร์สร้างรายการบุญบน HTML DOM
@@ -783,10 +768,28 @@
         }
     });
 
-    // ปุ่มสำหรับดำเนินการล็อกอินและล็อกเอาท์จากแอปพลิเคชัน
+    // ดึงผลลัพธ์จากการ Redirect ล็อกอิน
+    auth.getRedirectResult().then((result) => {
+        if (result && result.user) {
+            showToast('เข้าสู่ระบบสำเร็จแล้วครับ');
+        }
+    }).catch((error) => {
+        console.error("Auth redirect error: ", error);
+        if (error.code === 'auth/web-storage-unsupported' || error.message.includes('initial state')) {
+            showToast('เบราว์เซอร์นี้ไม่รองรับการล็อกอินผ่านแอป กรุณาเปิดด้วยเบราว์เซอร์หลัก (Safari/Chrome) ครับ');
+        }
+    });
+
+    // ปุ่มสำหรับดำเนินการล็อกอิน เปลี่ยนจาก signInWithPopup เป็น signInWithRedirect
     document.getElementById('loginBtn').onclick = async () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // บังคับให้เลือกบัญชีทุกครั้งเพื่อป้องกันการค้างสถานะเก่าใน In-App Browser
+            provider.setCustomParameters({ prompt: 'select_account' }); 
+            await auth.signInWithRedirect(provider);
+        } catch (error) {
+            showToast('เกิดข้อผิดพลาด: ' + error.message);
+        }
     };
 
     document.getElementById('logoutBtn').onclick = () => auth.signOut();
