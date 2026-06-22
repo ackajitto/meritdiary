@@ -266,10 +266,11 @@
             padding-top: 20px; 
         }
 
+        /* ปรับให้กล่องเพิ่มเงินสะสมไม่ตกบรรทัดจ้ะ */
         .merit-actions { 
             display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
+            flex-wrap: nowrap; 
+            gap: 8px; 
             margin-bottom: 20px; 
         }
 
@@ -619,7 +620,6 @@
                 </div>
                 ${merit.expanded ? `
                 <div class="merit-details">
-                    <!-- ย้ายรายการประวัติย่อยขึ้นมาไว้ด้านบนจ้ะ -->
                     <ul class="merit-transactions-list">
                         ${merit.transactions.map(t => `
                             <li>
@@ -628,13 +628,11 @@
                             </li>
                         `).join('')}
                     </ul>
-                    <!-- ย้ายกล่องเพิ่มเงินสะสมมาไว้ตรงนี้ ต่อจากประวัติย่อย และอยู่ก่อนหน้าปุ่มลบ -->
                     <div class="merit-actions" onclick="event.stopPropagation()">
-                        <input type="number" id="addAmt${index}" placeholder="จำนวน/บาท" style="width: 120px;">
-                        <input type="text" id="addDesc${index}" placeholder="รายละเอียด/ลิงก์" style="flex-grow: 1;">
-                        <button onclick="updateMeritAmount(${index})">เพิ่ม</button>
+                        <input type="number" id="addAmt${index}" placeholder="จำนวน/บาท" style="width: 105px; flex-shrink: 0;">
+                        <input type="text" id="addDesc${index}" placeholder="รายละเอียด/ลิงก์" style="flex: 1; min-width: 0;">
+                        <button onclick="updateMeritAmount(${index})" style="flex-shrink: 0; padding: 12px 16px;">เพิ่ม</button>
                     </div>
-                    <!-- ปุ่มลบก้อนใหญ่ด้านล่าง อยู่ตำแหน่งเดิมล่างสุดจ้ะ -->
                     <button class="delete-btn" onclick="event.stopPropagation(); deleteMerit(${index})">${deleteBtnText}</button>
                 </div>` : ''}
             `;
