@@ -503,12 +503,10 @@
 </div>
 
 <script>
-    // ตรวจสอบการตั้งค่าและเปิดใช้งาน Dark Mode ทันทีที่หน้าจอโหลดเสร็จ
     const currentTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     updateThemeButtonIcon(currentTheme);
 
-    // ฟังก์ชันในการสลับธีมของตัวเว็บ
     document.getElementById('themeToggle').addEventListener('click', () => {
         let theme = document.documentElement.getAttribute('data-theme');
         let newTheme = (theme === 'dark') ? 'light' : 'dark';
@@ -527,7 +525,6 @@
         }
     }
 
-    // กำหนดค่าการเชื่อมโยงข้อมูลกับ Firebase Realtime Database
     const firebaseConfig = {
         apiKey: "AIzaSyBW_KT7TJAThSg29gedQurkXhcTv5ACOmg",
         authDomain: "dharma-prayer.firebaseapp.com",
@@ -538,7 +535,6 @@
         appId: "1:4576358277:web:17240edf90e461cb489eec"
     };
 
-    // เชื่อมต่อบริการของทาง Firebase SDK
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
@@ -546,7 +542,6 @@
     let merits = [];
     let uid = null;
 
-    // ระบบ Custom Toast ใช้งานแทน alert() ป้องกันการสะดุดบน iPad/iOS
     function showToast(message) {
         const toast = document.getElementById('toast');
         toast.innerText = message;
@@ -556,7 +551,6 @@
         }, 3000);
     }
 
-    // ระบบ Custom Confirm Modal ใช้งานแทน confirm() เพื่อความสวยงามกลมกลืนกับธีม
     function showConfirm(message, callback) {
         const modal = document.getElementById('confirmModal');
         const confirmMessage = document.getElementById('confirmMessage');
@@ -576,7 +570,6 @@
         };
     }
 
-    // แปลงเวลาให้เป็นโครงสร้างวันของประเทศไทย
     function getCurrentDateTime() {
         const now = new Date();
         const day = now.getDate().toString().padStart(2, '0');
@@ -586,14 +579,12 @@
         return `${day}/${month}/${year} ${time}`;
     }
 
-    // ทำการลิงก์คำอธิบายที่เป็น URL ให้เปิดหน้าต่างใหม่ของเบราว์เซอร์ได้
     function linkify(text) {
         if (!text) return "";
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
     }
 
-    // ฟังก์ชันในการแสดงผลสกุลเงินเป็นรูปแบบสกุลบาท
     function formatCurrency(amount) {
         const formatted = new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(amount);
         return formatted.replace('฿', '฿ ');
@@ -604,7 +595,6 @@
         document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวม: ${formatCurrency(total)}`;
     }
 
-    // เรนเดอร์สร้างรายการบุญบน HTML DOM
     function renderMerits() {
         const list = document.getElementById('meritList');
         list.innerHTML = '';
@@ -619,6 +609,9 @@
                 }
             }
 
+            const hasTransactions = merit.transactions && merit.transactions.length > 0;
+            const deleteBtnText = hasTransactions ? '🗑️ ลบรายการย่อยล่าสุด' : '❌ ลบบันทึกบุญนี้';
+
             li.innerHTML = `
                 <div class="merit-header" onclick="toggleExpand(${index})">
                     <span class="merit-title">${index + 1}. ${merit.description}</span>
@@ -626,11 +619,7 @@
                 </div>
                 ${merit.expanded ? `
                 <div class="merit-details">
-                    <div class="merit-actions" onclick="event.stopPropagation()">
-                        <input type="number" id="addAmt${index}" placeholder="จำนวน/บาท" style="width: 120px;">
-                        <input type="text" id="addDesc${index}" placeholder="รายละเอียด/ลิงก์" style="flex-grow: 1;">
-                        <button onclick="updateMeritAmount(${index})">เพิ่ม</button>
-                    </div>
+                    <!-- ย้ายรายการประวัติย่อยขึ้นมาไว้ด้านบนจ้ะ -->
                     <ul class="merit-transactions-list">
                         ${merit.transactions.map(t => `
                             <li>
@@ -639,7 +628,14 @@
                             </li>
                         `).join('')}
                     </ul>
-                    <button class="delete-btn" onclick="event.stopPropagation(); deleteMerit(${index})">ลบบันทึกบุญนี้</button>
+                    <!-- ย้ายกล่องเพิ่มเงินสะสมมาไว้ตรงนี้ ต่อจากประวัติย่อย และอยู่ก่อนหน้าปุ่มลบ -->
+                    <div class="merit-actions" onclick="event.stopPropagation()">
+                        <input type="number" id="addAmt${index}" placeholder="จำนวน/บาท" style="width: 120px;">
+                        <input type="text" id="addDesc${index}" placeholder="รายละเอียด/ลิงก์" style="flex-grow: 1;">
+                        <button onclick="updateMeritAmount(${index})">เพิ่ม</button>
+                    </div>
+                    <!-- ปุ่มลบก้อนใหญ่ด้านล่าง อยู่ตำแหน่งเดิมล่างสุดจ้ะ -->
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteMerit(${index})">${deleteBtnText}</button>
                 </div>` : ''}
             `;
             list.appendChild(li);
@@ -647,13 +643,11 @@
         updateTotal();
     }
 
-    // ฟังก์ชันการอัปโหลดบันทึกขึ้นไปเก็บบน Firebase คลาวด์
     function saveMerits() {
         if (!uid) return;
         db.ref('merit_users/' + uid + '/merits').set(merits);
     }
 
-    // ดึงค่าบันทึกบุญเรียลไทม์จาก Firebase ของผู้ใช้นั้นๆ
     function loadMerits() {
         if (!uid) return;
         db.ref('merit_users/' + uid + '/merits').on('value', snap => {
@@ -662,13 +656,11 @@
         });
     }
 
-    // ฟังก์ชันในการ ย่อ/ขยาย ข้อมูลย้อนหลังของแต่ละรายการเมื่อคลิกเลือก
     window.toggleExpand = function(index) {
         merits[index].expanded = !merits[index].expanded;
         renderMerits();
     };
 
-    // การเพิ่มกลุ่มบุญหัวข้อใหม่เข้าสู่รายการ
     document.getElementById('addMeritBtn').onclick = () => {
         if (!uid) return;
         const manualDesc = document.getElementById('manualMeritInput').value.trim();
@@ -694,7 +686,6 @@
 
         merits.push(newMerit);
         
-        // ล้างค่าข้อมูลออกจากฟอร์มทันทีที่บันทึก
         document.getElementById('manualMeritInput').value = '';
         document.getElementById('meritSelect').value = '';
         document.getElementById('meritAmountInput').value = '';
@@ -703,7 +694,6 @@
         renderMerits();
     };
 
-    // การเติมเงินสะสมลงไปในกลุ่มบุญหัวข้อเดิมที่มีอยู่แล้ว
     window.updateMeritAmount = function(index) {
         if (!uid) return;
         const amtInput = document.getElementById(`addAmt${index}`);
@@ -736,25 +726,38 @@
         renderMerits();
     };
 
-    // ลบรายการกลุ่มบุญหลักออกจากระบบฐานข้อมูลคลาวด์อย่างถาวร
     window.deleteMerit = function(index) {
         if (!uid) return;
-        showConfirm('คุณแน่ใจหรือไม่ที่จะลบบันทึกบุญนี้อย่างถาวร?', () => {
-            merits.splice(index, 1);
+        
+        const currentMerit = merits[index];
+
+        if (currentMerit.transactions && currentMerit.transactions.length > 0) {
+            const removedTx = currentMerit.transactions.pop();
+            
+            let newTotal = (parseFloat(currentMerit.totalAmount) || 0) - (parseFloat(removedTx.amount) || 0);
+            currentMerit.totalAmount = Math.max(0, Math.round(newTotal * 100) / 100);
+            
             saveMerits();
             renderMerits();
-            showToast('ลบบันทึกบุญเรียบร้อยแล้ว');
-        });
+            showToast('ลบรายการย่อยล่าสุดเรียบร้อยแล้วจ้ะ');
+        } 
+        else {
+            showConfirm('คุณแน่ใจหรือไม่ที่จะลบบันทึกบุญนี้อย่างถาวร?', () => {
+                merits.splice(index, 1);
+                saveMerits();
+                renderMerits();
+                showToast('ลบบันทึกบุญเรียบร้อยแล้ว');
+            });
+        }
     };
 
-    // เฝ้าสังเกตการณ์เข้าสู่ระบบของบัญชีผู้ใช้งาน (Google Auth)
     auth.onAuthStateChanged(user => {
         if (user) {
             uid = user.uid;
             document.getElementById('userName').innerText = user.displayName;
             document.getElementById('loginBox').style.display = 'none';
             document.getElementById('userInfo').style.display = 'flex';
-            document.getElementById('totalMeritBar').style.display = 'block'; // แสดงแถบสรุปยอดเมื่อเข้าสู่ระบบแล้วเท่านั้น
+            document.getElementById('totalMeritBar').style.display = 'block';
             document.getElementById('inputForm').style.display = 'flex';
             loadMerits();
         } else {
@@ -763,12 +766,11 @@
             renderMerits();
             document.getElementById('loginBox').style.display = 'block';
             document.getElementById('userInfo').style.display = 'none';
-            document.getElementById('totalMeritBar').style.display = 'none'; // ซ่อนแถบสรุปยอดหากยังไม่ผ่านการยืนยันตัวตน
+            document.getElementById('totalMeritBar').style.display = 'none';
             document.getElementById('inputForm').style.display = 'none';
         }
     });
 
-    // ดึงผลลัพธ์จากการ Redirect ล็อกอิน
     auth.getRedirectResult().then((result) => {
         if (result && result.user) {
             showToast('เข้าสู่ระบบสำเร็จแล้วครับ');
@@ -780,11 +782,9 @@
         }
     });
 
-    // ปุ่มสำหรับดำเนินการล็อกอิน เปลี่ยนจาก signInWithPopup เป็น signInWithRedirect
     document.getElementById('loginBtn').onclick = async () => {
         try {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // บังคับให้เลือกบัญชีทุกครั้งเพื่อป้องกันการค้างสถานะเก่าใน In-App Browser
             provider.setCustomParameters({ prompt: 'select_account' }); 
             await auth.signInWithRedirect(provider);
         } catch (error) {
