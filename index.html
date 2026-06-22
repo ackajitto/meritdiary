@@ -462,13 +462,13 @@
     </div>
 
     <!-- แถบยอดรวมทั้งหมด (จะซ่อนไว้จนกว่าจะล็อกอินเรียบร้อย) -->
-    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
+    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวม: 0 บาท</div>
 
     <!-- ส่วนกรอกข้อมูลเพิ่มบุญใหม่ -->
     <div id="inputForm" class="input-section" style="display: none;">
         <input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญเอง (หากไม่มีในรายการด้านล่าง)">
         <select id="meritSelect">
-            <option value="">-- หรือคลิกเลือกจากกลุ่มบุญแนะนำ --</option>
+            <option value="">-- เลือกบุญแนะนำ --</option>
             <option value="บูชาธรรมหลวงพ่อ">บูชาธรรมหลวงพ่อ</option>
             <option value="บูชาข้าวพระ">บูชาข้าวพระ</option>
             <option value="บวชพระ">บวชพระ</option>
@@ -616,7 +616,7 @@
 
     function updateTotal() {
         const total = merits.reduce((sum, m) => sum + (parseFloat(m.totalAmount) || 0), 0);
-        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวมทั้งหมด: ${formatCurrency(total)}`;
+        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวม: ${formatCurrency(total)}`;
     }
 
     // เรนเดอร์สร้างรายการบุญบน HTML DOM
