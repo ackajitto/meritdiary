@@ -314,11 +314,22 @@
             margin-bottom: 6px; 
             border-radius: 8px;
             font-size: 0.95em;
+            gap: 15px; /* เว้นวรรคขั้นกลางระหว่างข้อความและจำนวนเงิน */
         }
 
+        /* ปรับสไตล์ให้ข้อความ/ลิงก์รายละเอียดสามารถตัดคำขึ้นบรรทัดใหม่ได้เอง ไม่ทะลุออกนอกกรอบ */
         .merit-transactions-list li span:first-child {
             color: var(--text-regular);
             line-height: 1.4;
+            flex: 1; /* ช่วยดันให้ขยายครอบคลุมพื้นที่ที่เหลือ */
+            min-width: 0; /* สำคัญ: บังคับให้สิทธิ์ CSS ในการตัดคำทำงานได้อย่างสมบูรณ์ใน Flexbox */
+            word-break: break-all; /* ป้องกันข้อความหรือ URL ยาวเหยียดทะลุออกนอกขอบ */
+            overflow-wrap: break-word; /* รองรับการตัดข้อความเบราว์เซอร์สมัยใหม่ */
+        }
+
+        .merit-transactions-list li span:last-child {
+            white-space: nowrap; /* ตรึงจำนวนเงินด้านขวาให้อยู่บรรทัดเดียวกันเสมอ */
+            flex-shrink: 0;
         }
         
         .delete-btn { 
@@ -339,6 +350,7 @@
             color: #2196f3; 
             text-decoration: none; 
             font-weight: bold;
+            word-break: break-all; /* ช่วยสลายคำในแท็ก a หากลิงก์มีลักษณะยาวต่อเนื่องกัน */
         }
         a:hover { 
             text-decoration: underline; 
@@ -450,13 +462,13 @@
     </div>
 
     <!-- แถบยอดรวมทั้งหมด (จะซ่อนไว้จนกว่าจะล็อกอินเรียบร้อย) -->
-    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวม: 0 บาท</div>
+    <div id="totalMeritBar" class="total-merit-bar" style="display: none;">💰 ยอดบุญรวมทั้งหมด: 0 บาท</div>
 
     <!-- ส่วนกรอกข้อมูลเพิ่มบุญใหม่ -->
     <div id="inputForm" class="input-section" style="display: none;">
-        <input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญ">
+        <input type="text" id="manualMeritInput" placeholder="พิมพ์ชื่อรายการบุญเอง (หากไม่มีในรายการด้านล่าง)">
         <select id="meritSelect">
-            <option value="">-- เลือกบุญแนะนำ --</option>
+            <option value="">-- หรือคลิกเลือกจากกลุ่มบุญแนะนำ --</option>
             <option value="บูชาธรรมหลวงพ่อ">บูชาธรรมหลวงพ่อ</option>
             <option value="บูชาข้าวพระ">บูชาข้าวพระ</option>
             <option value="บวชพระ">บวชพระ</option>
@@ -604,7 +616,7 @@
 
     function updateTotal() {
         const total = merits.reduce((sum, m) => sum + (parseFloat(m.totalAmount) || 0), 0);
-        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวม: ${formatCurrency(total)}`;
+        document.getElementById('totalMeritBar').innerText = `💰 ยอดบุญรวมทั้งหมด: ${formatCurrency(total)}`;
     }
 
     // เรนเดอร์สร้างรายการบุญบน HTML DOM
